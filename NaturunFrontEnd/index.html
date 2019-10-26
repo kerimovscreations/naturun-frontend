@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      var map;
+      var markersArray = [];
+
+      function initMap() {
+          map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: -32.336273, lng: 121.761231},
+            zoom: 11,
+            mapTypeId: 'satellite',
+            rotateControl: true,
+          });
+          map.setTilt(45);
+    
+          var marker, i;
+    
+          setInterval(function()
+          { 
+              axios.get('http://naturun-94aa4.appspot.com/api/getanimals')
+              .then(function (response) {
+                console.log(response);
+
+                if(response.data.length > markersArray.length){
+                    for (i = 0; i < response.data.length; i++) {
+                         marker = new google.maps.Marker({
+                           position: new google.maps.LatLng(response.data[i].coordinates._latitude , response.data[i].coordinates._longitude),
+                           icon: 'https://raw.githubusercontent.com/emiraslan/SCADA_Protocol/master/australwhitengaroo.png?token=AELGD7OS5NGYXP4TUBNE4UC5XXATS',
+                           map: map
+                        });
+                        markersArray.push(marker);
+                   }
+                }else{
+                    for (i = 0; i < markersArray.length; i++) {
+                          var latlng = new google.maps.LatLng(response.data[i].coordinates._latitude , 
+                                                              response.data[i].coordinates._longitude);
+                          markersArray[i].setPosition(latlng);       
+                   }
+                }
+              })
+              .catch(function (error) {
+                console.log(error);
+              })
+              .finally(function(){
+                console.log('Amirsalan2');
+              });
+          }, 2000);
+
+
+          var driversArray = [];
+
+          setInterval(function()
+          {
+              axios.get('http://naturun-94aa4.appspot.com/api/getdrivers')
+              .then(function (response) {
+                console.log(response);
+
+                if(response.data.length > driversArray.length){
+                    for (i = 0; i < response.data.length; i++) {
+                         marker = new google.maps.Marker({
+                           position: new google.maps.LatLng(response.data[i].coordinates._latitude , response.data[i].coordinates._longitude),
+                           icon: 'https://raw.githubusercontent.com/emiraslan/SCADA_Protocol/master/car36px.png?token=AELGD7IWBP3ESAED4QKIKJS5XXEXO',
+                           map: map
+                        });
+                        driversArray.push(marker);
+                   }
+                }else{
+                    for (i = 0; i < driversArray.length; i++) {
+                          var latlng = new google.maps.LatLng(response.data[i].coordinates._latitude , 
+                                                              response.data[i].coordinates._longitude);
+                          driversArray[i].setPosition(latlng);       
+                   }
+                }
+              })
+              .catch(function (error) {
+                console.log(error);
+              })
+              .finally(function(){
+                console.log('Amirsalan2');
+              });
+          }, 2000);
+
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDiZcZNa1PveN8663rZjSHY8yIKYkZkcIQ&callback=initMap"
+    async defer></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js" async defer></script>
+  </body>
+</html>
